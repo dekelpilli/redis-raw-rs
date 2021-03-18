@@ -17,7 +17,7 @@
 //!
 //! # Basic Operation
 //!
-//! `redis_raw` exposes two API levels: a low- and a lower-level part!  
+//! `redis_raw` exposes two API levels: a low- and a lower-level part!
 //! The `low-level` part does not expose all the functionality of redis and
 //! might take some liberties in how it speaks the protocol.  The `lower-level`
 //! part of the API allows you to express any request on the redis level.
@@ -51,14 +51,14 @@
 //! which allow you to make redis requests and parse redis (RESP) responses.
 //! These functions correspond to the underlying socket's read and write operations.
 //!
-//! The `read()` function parses the RESP response as `redis_raw::Value`.  
-//! `Value` Represents a redis [RESP protcol response](https://redis.io/topics/protocol#resp-protocol-description).  
+//! The `read()` function parses the RESP response as `redis_raw::Value`.
+//! `Value` Represents a redis [RESP protcol response](https://redis.io/topics/protocol#resp-protocol-description).
 //!
 //! ```rust,no_run
-//! use redis_raw::{RedisConnection, RedisResult, Value }
+//! use redis_raw::{RedisConnection, RedisResult, Value };
 //!
-//! fn do_something(con: &mut RedisConnection) -> RedisResult<Value> {
-//!    con.write("set key vvv\r\n").await?
+//! fn do_something(con: &mut RedisConnection) -> Result<Value, String> {
+//!    con.write("set key vvv\r\n".as_bytes()).await?;
 //!    con.read().await
 //! }
 //! ```
@@ -69,7 +69,7 @@
 //! `write()` and a `read()` and converts the `Value` into requested type.
 //!
 //! ```rust,no_run
-//! use redis_raw::{RedisConnection, RedisResult, Value }
+//! use redis_raw::{RedisConnection, RedisResult, Value };
 //!
 //! fn do_something(con: &mut RedisConnection) -> RedisResult<String> {
 //!    con.command::<()>("set key value\r\n".to_owned()).await?;
@@ -81,7 +81,7 @@
 //! Here is another example, to find out the correct result type see [redis docs](https://redis.io/commands).
 //!
 //! ```rust,no_run
-//! use redis_raw::{RedisConnection, RedisResult, Value }
+//! use redis_raw::{RedisConnection, RedisResult, Value };
 //!
 //! fn do_something(con: &mut RedisConnection) -> RedisResult<Vec<String>> {
 //!    for i in 1..10 {

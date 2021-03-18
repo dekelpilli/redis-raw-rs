@@ -1,8 +1,7 @@
 use crate::serialize;
 use crate::types::{ParseFrom, RedisError, RedisResult, Value};
-use tokio::io::BufReader;
+use tokio::io::{BufReader, AsyncWriteExt};
 use tokio::net::TcpStream;
-use tokio::prelude::*;
 
 // macro_rules! redis_command {
 //     ($name:ident -> $returns:ty) => {
@@ -27,27 +26,27 @@ impl RedisConnection {
         if !command.ends_with("\r\n") {
             return Err(RedisError {
                 message: "Commands must end with \\r\\n".to_owned(),
-                command: command,
+                command,
             });
         }
         if let Err(io_err) = self.write(command.as_ref()).await {
             return Err(RedisError {
                 message: io_err.to_string(),
-                command: command,
+                command,
             });
         }
         let value = match self.read().await {
             Err(message) => {
-                return Err(RedisError { message, command: command });
+                return Err(RedisError { message, command });
             }
             Ok(v) => v,
         };
         value
             .try_into()
-            .map_err(|message| RedisError { message, command: command })
+            .map_err(|message| RedisError { message, command })
     }
     /// write a redis command into the socket.
-    pub async fn write(&mut self, command: &[u8]) -> io::Result<()> {
+    pub async fn write(&mut self, command: &[u8]) -> std::io::Result<()> {
         self.reader.get_mut().write_all(command).await
     }
     /// read and parse a redis RESP protocol response.

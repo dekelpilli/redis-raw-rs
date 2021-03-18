@@ -1,10 +1,9 @@
-use tokio::io::BufReader;
-use tokio::net::TcpStream;
-use tokio::prelude::*;
+use tokio::io::{BufReader, AsyncBufReadExt, AsyncReadExt};
 
 use crate::types::Value;
 use std::future::Future;
 use std::pin::Pin;
+use tokio::net::TcpStream;
 
 // fn test() -> RedisResult<Vec<u8>> {
 //     std::fs::read("some").map_err(|err| err.into())
@@ -13,11 +12,12 @@ use std::pin::Pin;
 /// reads the redis RESP responses from the socket into `Value`
 /// ```
 /// # use tokio::net::TcpStream;
-/// # use tokio::io::BufReader;
+/// # use tokio::io::{BufReader, AsyncWriteExt};
 /// # use self::resp::{Decoder, Value};
+/// # use redis_raw::Value;
 ///
-/// let mut stream = TcpStream::connect("127.0.0.1:6379").await?
-/// stream.write_all("ping\r\n").await?;
+/// let mut stream = TcpStream::connect("127.0.0.1:6379").await?;
+/// stream.write_all("ping\r\n".as_bytes()).await?;
 /// let mut reader = BufReader::new(stream);
 /// let value = decode(&mut reader).await?;
 /// assert_eq!(value, Value::Status("PONG".to_string()));
